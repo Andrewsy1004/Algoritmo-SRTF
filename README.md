@@ -12,7 +12,11 @@ This project implements the **Shortest Remaining Time First (SRTF)** process sch
 - ✅ Implementation of the SRTF algorithm for process scheduling.
 - 🔄 Hot Module Replacement (HMR) for faster development.
 - 🧹 ESLint configured with basic rules to maintain clean code.
-  
+- 📊 Visual representation of process scheduling for better understanding.
+- ⚙️ Fully customizable through configuration files.
+- 💻 Cross-browser compatibility ensuring consistent behavior across major browsers.
+- 🚀 Optimized performance for both development and production builds.
+
 ## 📦 Installation
 
 1. Clone the repository:
