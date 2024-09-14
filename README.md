@@ -1,8 +1,26 @@
-# React + Vite
+# 🚀 SRTF Algorithm
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project implements the **Shortest Remaining Time First (SRTF)** process scheduling algorithm, developed using React and Vite, with HMR (Hot Module Replacement) capabilities and configured with some ESLint rules.
 
-Currently, two official plugins are available:
+## 🛠️ Technologies Used
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- ⚛️ **React**: JavaScript library for building user interfaces.
+- ⚡ **Vite**: Fast JavaScript build tool with support for HMR.
+
+## 🌟 Features
+
+- ✅ Implementation of the SRTF algorithm for process scheduling.
+- 🔄 Hot Module Replacement (HMR) for faster development.
+- 🧹 ESLint configured with basic rules to maintain clean code.
+  
+## 📦 Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/Andrewsy1004/Algoritmo-SRTF.git
+   cd Algoritmo-SRTF
+   npm install
+   npm run dev
+
+
