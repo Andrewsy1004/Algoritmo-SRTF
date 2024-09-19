@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Bar } from 'react-chartjs-2';
 import { Chart, CategoryScale, LinearScale, BarElement, Tooltip, Legend } from 'chart.js';
@@ -14,27 +13,27 @@ Chart.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 export const App = () => {
   const [newProcess, setNewProcess] = useState({ arrivalTime: 0, burstTime: 1, color: '#ff7300' });
   const [timeline, setTimeline] = useState([]);
+  const [visibleSteps, setVisibleSteps] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [processes, setProcesses] = useState([
     { id: 1, arrivalTime: 0, burstTime: 8, remainingTime: 8, color: '#8884d8' },
     { id: 2, arrivalTime: 1, burstTime: 4, remainingTime: 4, color: '#82ca9d' },
     { id: 3, arrivalTime: 2, burstTime: 2, remainingTime: 2, color: '#ffc658' },
   ]);
 
-  const minValue = 10; // Define aquí el valor mínimo
-
-
   const handleScheduling = () => {
-
     const allValid = processes.every(
       (process) => process.burstTime >= 1 && process.arrivalTime >= 0
     );
-  
+
     if (!allValid) {
       toast.error('Todos los procesos deben tener un tiempo de ejecución mayor o igual a 1 y un tiempo de llegada mayor o igual a 0');
-      return; 
+      return;
     }
-  
+
     runSRTF({ processes, setTimeline });
+    setVisibleSteps(0);
+    setIsPlaying(false);
   };
 
   const addProcess = () => {
@@ -52,16 +51,18 @@ export const App = () => {
   };
 
   const chartData = {
-    labels: timeline.map((item) => ` ${item.time}`),
+    labels: timeline.slice(0, visibleSteps).map((item) => ` ${item.time}`),
     datasets: processes.map((process) => ({
       label: `P${process.id}`,
-      data: timeline.map((item) => item.processId === process.id ? 1 : 0),
+      data: timeline.slice(0, visibleSteps).map((item) => item.processId === process.id ? 1 : 0),
       backgroundColor: process.color,
       stack: 'stack1',
     })),
   };
 
   const options = {
+    responsive: true,
+    maintainAspectRatio: false,
     scales: {
       x: { stacked: true },
       y: {
@@ -71,16 +72,35 @@ export const App = () => {
       },
     },
   };
-  
- 
+
+  useEffect(() => {
+    let intervalId;
+    if (isPlaying && visibleSteps < timeline.length) {
+      intervalId = setInterval(() => {
+        setVisibleSteps((prev) => Math.min(prev + 1, timeline.length));
+      }, 2000);
+    }
+    return () => clearInterval(intervalId);
+  }, [isPlaying, visibleSteps, timeline.length]);
+
+  const handlePlayPause = () => {
+    setIsPlaying(!isPlaying);
+  };
+
+  const handleShowAll = () => {
+    setVisibleSteps(timeline.length);
+    setIsPlaying(false);
+  };
+
+  const handleReset = () => {
+    setVisibleSteps(0);
+    setIsPlaying(false);
+  };
 
   return (
     <div className="font-sans bg-gray-100 min-h-screen">
-
       <Navbar />
-
       <Introduction />
-
 
       <section id="example" className="p-8 bg-white shadow-md my-8 mx-4 rounded-lg">
         <h2 className="text-3xl font-bold mb-4 text-center text-gray-800">Ejemplo Interactivo</h2>
@@ -172,15 +192,34 @@ export const App = () => {
         {timeline.length > 0 && (
           <div className="mt-8">
             <h3 className="text-2xl font-semibold mb-4">Línea de Tiempo de Ejecución</h3>
-            <div className="bg-white p-4 rounded-lg shadow-md">
+            <div className="bg-white p-4 rounded-lg shadow-md" style={{ height: '500px', maxWidth: '2000px', margin: '0 auto' }}>
               <Bar data={chartData} options={options} />
+            </div>
+            <div className="mt-4 flex justify-center space-x-4">
+              <button
+                onClick={handlePlayPause}
+                className="p-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600 transition duration-300"
+              >
+                {isPlaying ? 'Pausar' : 'Reproducir'}
+              </button>
+              <button
+                onClick={handleShowAll}
+                className="p-2 bg-purple-500 text-white rounded shadow hover:bg-purple-600 transition duration-300"
+              >
+                Mostrar Todo
+              </button>
+              <button
+                onClick={handleReset}
+                className="p-2 bg-red-500 text-white rounded shadow hover:bg-red-600 transition duration-300"
+              >
+                Reiniciar
+              </button>
             </div>
           </div>
         )}
       </section>
 
-      <Footer /> 
-      
+      <Footer />
     </div>
   );
 };
