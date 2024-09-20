@@ -8,13 +8,13 @@ import { toast } from "react-hot-toast";
 import { runSRTF } from './helper';
 import { Navbar, Introduction, Footer } from './components';
 
+
 Chart.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
 export const App = () => {
   const [newProcess, setNewProcess] = useState({ arrivalTime: 0, burstTime: 1, color: '#ff7300' });
   const [timeline, setTimeline] = useState([]);
   const [visibleSteps, setVisibleSteps] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [processes, setProcesses] = useState([
     { id: 1, arrivalTime: 0, burstTime: 8, remainingTime: 8, color: '#8884d8' },
     { id: 2, arrivalTime: 1, burstTime: 4, remainingTime: 4, color: '#82ca9d' },
@@ -33,7 +33,6 @@ export const App = () => {
 
     runSRTF({ processes, setTimeline });
     setVisibleSteps(0);
-    setIsPlaying(false);
   };
 
   const addProcess = () => {
@@ -73,28 +72,20 @@ export const App = () => {
     },
   };
 
-  useEffect(() => {
-    let intervalId;
-    if (isPlaying && visibleSteps < timeline.length) {
-      intervalId = setInterval(() => {
-        setVisibleSteps((prev) => Math.min(prev + 1, timeline.length));
-      }, 2000);
+  const handleNext = () => {
+    if (visibleSteps < timeline.length) {
+      setVisibleSteps((prev) => prev + 1);
+      setIsPlaying(false);
     }
-    return () => clearInterval(intervalId);
-  }, [isPlaying, visibleSteps, timeline.length]);
-
-  const handlePlayPause = () => {
-    setIsPlaying(!isPlaying);
   };
+
 
   const handleShowAll = () => {
     setVisibleSteps(timeline.length);
-    setIsPlaying(false);
   };
 
   const handleReset = () => {
     setVisibleSteps(0);
-    setIsPlaying(false);
   };
 
   return (
@@ -196,24 +187,32 @@ export const App = () => {
               <Bar data={chartData} options={options} />
             </div>
             <div className="mt-4 flex justify-center space-x-4">
+              
               <button
-                onClick={handlePlayPause}
+                onClick={handleNext}
                 className="p-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600 transition duration-300"
               >
-                {isPlaying ? 'Pausar' : 'Reproducir'}
+                {
+                  visibleSteps < timeline.length
+                    ? 'Siguiente'
+                    : 'Finalizado'
+                }
               </button>
+              
               <button
                 onClick={handleShowAll}
                 className="p-2 bg-purple-500 text-white rounded shadow hover:bg-purple-600 transition duration-300"
               >
                 Mostrar Todo
               </button>
+              
               <button
                 onClick={handleReset}
                 className="p-2 bg-red-500 text-white rounded shadow hover:bg-red-600 transition duration-300"
               >
                 Reiniciar
               </button>
+              
             </div>
           </div>
         )}
